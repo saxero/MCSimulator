@@ -14,9 +14,14 @@ showing how many times each scenario appeared during the simulations.
 - ScottPlot
 
 ## Getting Started
-1. Clone this repository
-2. Open solution with visual studio
-3. Build the solution
+1. Install .NET Core (https://www.microsoft.com/net/learn/get-started-with-dotnet-tutorial)
+2. Clone this repository
+3. Open a command prompt window
+4. Go to the root folder of the project (where .sln is located).
+5. Modify the historic.csv file by providing the historical data of your team
+6. run 'dotnet restore', it will install external packages
+7. run 'dotnet run', it will launch the program
+
 
 ## Contributing
 Please see our [Contribution Guide](https://github.com/ERNI-Academy/net6-automation-testware/blob/main/CONTRIBUTING.md) to learn how to contribute.
