@@ -164,19 +164,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\josep\\.nuget\\packages\\": {}
+    "C:\\Users\\vijo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\codis\\MonteCarlo_Chatgpt\\MonteCarlo_Simulator.csproj",
+      "projectUniqueName": "C:\\Codis\\MCSimulator\\MonteCarlo_Simulator.csproj",
       "projectName": "MonteCarlo_Simulator",
-      "projectPath": "C:\\codis\\MonteCarlo_Chatgpt\\MonteCarlo_Simulator.csproj",
-      "packagesPath": "C:\\Users\\josep\\.nuget\\packages\\",
-      "outputPath": "C:\\codis\\MonteCarlo_Chatgpt\\obj\\",
+      "projectPath": "C:\\Codis\\MCSimulator\\MonteCarlo_Simulator.csproj",
+      "packagesPath": "C:\\Users\\vijo\\.nuget\\packages\\",
+      "outputPath": "C:\\Codis\\MCSimulator\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\josep\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\vijo\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -230,7 +230,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
