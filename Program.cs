@@ -7,19 +7,16 @@ namespace MonteCarloSimulation
     {
         static void Main(string[] args)
         {
-            int numberOfSimulations;
-            int periodsPerRound;
-
-            if (!CheckInputParameters(args, out numberOfSimulations, out periodsPerRound))
+            if (!CheckInputParameters(args, out string mode, out int numberOfSimulations, out int periodsPerRound, out int itemsToComplete, out string historicFile))
                 return;
             
-            List<int> pastDeliveredItems = LoadHistoric();
+            List<int> pastDeliveredItems = LoadHistoric(historicFile);
             if (pastDeliveredItems.Count==0)
                 return;
 
             // Run Monte Carlo simulations
-            List<int> simulationResults = RunSimulations(numberOfSimulations, periodsPerRound, pastDeliveredItems);
-
+            List<int> simulationResults = RunSimulations(mode, numberOfSimulations, periodsPerRound, pastDeliveredItems, itemsToComplete);
+            
             // Create bar chart and save as image
             CreateBarChart(simulationResults, "MonteCarloResults.png");
 
@@ -27,35 +24,28 @@ namespace MonteCarloSimulation
             PrintPercentiles(simulationResults);
         }
 
-        static void PrintPercentiles(List<int> simulationResults){
-            Console.WriteLine($"50th Percentile: {GetPercentile(simulationResults, 50)}");
-            Console.WriteLine($"10th Percentile: {GetPercentile(simulationResults, 10)}");
-            Console.WriteLine($"15th Percentile: {GetPercentile(simulationResults, 15)}");
-            Console.WriteLine($"20th Percentile: {GetPercentile(simulationResults, 20)}");
-            Console.WriteLine($"25th Percentile: {GetPercentile(simulationResults, 25)}");
-        }
+        static List<int> HowLong(int itemsToComplete, int numberOfSimulations, List<int> pastDeliveredItems){
+            List<int> simulationResults = new List<int>();
+            Random rand = new Random();
 
-        static bool CheckInputParameters(string[] args, out int numberOfSimulations, out int periodsPerRound){
-            numberOfSimulations=10000; // default value
-            periodsPerRound =1; // default value
-            if (args.Length!=3){
-                Console.WriteLine("Wrong number of input parameters.");
-                return false;
+            // Run Monte Carlo simulations
+            for (int i = 0; i < numberOfSimulations; i++){
+                int totalDelivered = 0;
+                int numberOfPeriods=0;
+                while (totalDelivered<itemsToComplete){
+                    int randomIndex = rand.Next(pastDeliveredItems.Count);
+                    totalDelivered += pastDeliveredItems[randomIndex];
+                    numberOfPeriods++;
+                }
+                simulationResults.Add(numberOfPeriods);
             }
             
-            if (!Int32.TryParse(args[1], out numberOfSimulations)){
-                Console.WriteLine("Wrong value for parameter 'Number of Simulations'");
-                return false;
-            }
-
-            if (!Int32.TryParse(args[2], out periodsPerRound)){
-                Console.WriteLine("Wrong value for parameter 'Number of Periods in each scenario'");
-                return false;
-            }
-            return true;
+            // Sort results Ascending because the less iterations the better --> handy to calculate percentiles
+            simulationResults = simulationResults.OrderBy(i=>i).ToList();
+            return simulationResults;
         }
 
-        static List<int> RunSimulations(int numberOfSimulations, int periodsPerRound, List<int> pastDeliveredItems){
+        static List<int> HowMany(int numberOfSimulations, int periodsPerRound, List<int> pastDeliveredItems){
             List<int> simulationResults = new List<int>();
             Random rand = new Random();
 
@@ -69,33 +59,100 @@ namespace MonteCarloSimulation
                 simulationResults.Add(totalDelivered);
             }
             
-            // Sort results --> handy to calculate percentiles
-            simulationResults.Sort();
+            // Sort results Descending because the more items the better --> handy to calculate percentiles
+            simulationResults = simulationResults.OrderByDescending(i=>i).ToList();
             return simulationResults;
         }
 
+        static bool CheckInputParameters(string[] args, out string mode, out int numberOfSimulations, out int periodsPerRound, out int itemsToComplete, out string historicFile){
+            numberOfSimulations=10000; // default value
+            periodsPerRound =1; // default value
+            itemsToComplete =0;
+            mode = "";
+            historicFile = "";
+            if (args.Length!=4){
+                Console.WriteLine("Usage:");
+                Console.WriteLine("----------");
+                Console.WriteLine("dotnet run howmany [history input file] [number of simulations] [number of periods]");
+                Console.WriteLine("OR");
+                Console.WriteLine("dotnet run howlong [history input file] [number of simulations] [items to complete]");
+                Console.WriteLine("");
+                return false;
+            }
+            
+            mode = args[0].ToUpper();
+            switch (mode){
+                case "HOWMANY":
+                    if (!int.TryParse(args[2], out numberOfSimulations)){
+                        Console.WriteLine("Wrong value for parameter 'Number of Simulations'");
+                        return false;
+                    }
+                    
+                    if (!int.TryParse(args[3], out periodsPerRound)){
+                        Console.WriteLine("Wrong value for parameter 'Number of Periods in each scenario'");
+                        return false;
+                    }
+                    break;
+                case "HOWLONG":
+                    if (!int.TryParse(args[2], out numberOfSimulations)){
+                        Console.WriteLine("Wrong value for parameter 'Number of Simulations'");
+                        return false;
+                    }
+
+                    if (!int.TryParse(args[3], out itemsToComplete)){
+                        Console.WriteLine("Wrong value for parameter 'Items to complete'");
+                        return false;
+                    }
+                    break;
+
+                default :
+                    Console.WriteLine("First parameter should be 'howmany' or 'howlong'");
+                    return false;
+            }
+
+            historicFile = args[1];
+            if (!File.Exists(historicFile)){
+                Console.WriteLine("Cannot find the historic file '{0}'", historicFile);
+                return false;
+            }
+            return true;
+        }
+
+        static List<int> RunSimulations(string mode, int numberOfSimulations, int periodsPerRound, List<int> pastDeliveredItems, int itemsToComplete){
+            if (mode=="HOWMANY")
+                return HowMany(numberOfSimulations, periodsPerRound, pastDeliveredItems);
+            else
+                return HowLong(itemsToComplete, numberOfSimulations, pastDeliveredItems);
+        }
+
+        static void PrintPercentiles(List<int> simulationResults){
+            Console.WriteLine($"50th Percentile: {GetPercentile(simulationResults, 50)}");
+            Console.WriteLine($"75th Percentile: {GetPercentile(simulationResults, 75)}");
+            Console.WriteLine($"80th Percentile: {GetPercentile(simulationResults, 80)}");
+            Console.WriteLine($"85th Percentile: {GetPercentile(simulationResults, 85)}");
+            Console.WriteLine($"90th Percentile: {GetPercentile(simulationResults, 90)}");
+        }
         static int GetPercentile(List<int> sortedResults, double percentile)
         {
             int index = (int)Math.Ceiling((percentile / 100.0) * sortedResults.Count) - 1;
             return sortedResults[index];
         }
 
-        private static List<int> LoadHistoric(){
+        private static List<int> LoadHistoric(string historicFile){
             
             // Read historical data
             List<int> pastDeliveredItems = new List<int>();
             
             try{
-                StreamReader reader = new StreamReader(@".\historic.csv");
+                StreamReader reader = new StreamReader(historicFile);
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line?.Split(',');
-                    var isNumeric = Int32.TryParse(values?[1], out int deliveredItems);
+                    var isNumeric = int.TryParse(values?[1], out int deliveredItems);
                     
                     if (isNumeric) {
                         pastDeliveredItems.Add(deliveredItems);
-                        Console.WriteLine(deliveredItems);
                     }
                 }
             }
