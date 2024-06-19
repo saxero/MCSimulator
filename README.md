@@ -1,15 +1,19 @@
 # About
 Welcome to the Monte Carlo Simulation tool! This project is a C# script designed to perform Monte Carlo simulations, a powerful statistical technique used to understand the impact of risk and uncertainty in prediction and forecasting models.
 
-This tool performs 10,000 different simulations providing a possible delivery scenario based on delivery historical data.  
+According to the historical data of delivery, this tool allows for answering two different questions:
+1. **HOW MANY** items are expected to be finished by the team in a certain period?
+2. **HOW LONG** will it take for the team to finish a certain number of work items?
+   
+In both cases, the tool performs the requested number of different simulations (10,000 by default) providing a possible delivery scenario based on delivery historical data.  
 
-The historical data is expected as a list of periods and the corresponding 
-number of PBIs (Product Backlog Items) delivered in each period.
+The historical data is expected as a list of periods and the corresponding number of PBIs (Product Backlog Items) delivered in each period.
 
-The outcome of this script is the calculation of the 50th, 25th, 20th, 15th and, 10th percentile for the 10,000 simulated scenarios  Additionally, a bar chart is generated as an png file
+The outcome of this script is the calculation of the 50th, 25th, 20th, 15th, and 10th percentile for the 10,000 simulated scenarios  Additionally, a bar chart is generated as a png file
 showing how many times each scenario appeared during the simulations.
 
-![Code_1jRTcMlyHp](https://github.com/saxero/MCSimulator/assets/403185/668c1dc2-6a77-4b9b-b08b-771d692a25b8)
+![ShareX_NLIK9K4P65](https://github.com/saxero/MCSimulator/assets/403185/efe8e332-e62c-431f-8adc-de060603e376)
+
 
 ![MonteCarloResults](https://github.com/saxero/MCSimulator/assets/403185/9108d49b-2c71-4f5c-9137-c93a27e42be8)
 
@@ -32,7 +36,11 @@ This software shall be launched through the Command Line.
 
 **Syntax:**
 
->dotnet run [historic input file] [number of simulations] [number of periods per round]
+>dotnet run howmany [historic input file] [number of simulations] [number of periods per round]
+
+OR
+
+>dotnet run howlong [historic input file] [number of simulations] [items to complete]
 
 **where**
 
@@ -42,9 +50,13 @@ This software shall be launched through the Command Line.
   
   _[number of periods per round]_ how many periods from the historical shall be taken for each simulation round_
   
-**Example:**
+  _[items to complete]_ the desired number of work items to be finished_
+  
+**Examples:**
 
->dotnet run historic.csv 10000 3
+>dotnet run howmany historic.csv 10000 3
+>
+>dotnet run howlong historic.csv 10000 50
 
 ## Contributing
 Please see our [Contribution Guide](https://github.com/ERNI-Academy/net6-automation-testware/blob/main/CONTRIBUTING.md) to learn how to contribute.
